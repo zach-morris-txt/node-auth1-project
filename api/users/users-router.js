@@ -1,7 +1,7 @@
 //Imports
 const express = require('express')
 const { restrict } = require('../auth/auth-middleware')
-const User = require('../auth/auth-middleware')
+const User = require('./users-model')
 
 
 //Miniature Instance Of Express Server
@@ -32,11 +32,17 @@ const router = express.Router()
   }
  */
 router.get('/', restrict, async (req, res, next) => {
-  User.find()
-    .then(users => {
-      res.status(200).json(users);
-    })
-    .catch(next);
+  try {
+    const users = await User.find()
+    res.json(users)
+  } catch (err) {
+    next(err)
+  }
+      // User.find()
+      //   .then(users => {
+      //     res.status(200).json(users);
+      //   })
+      //   .catch(next);
 })
 
 

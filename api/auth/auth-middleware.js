@@ -31,14 +31,14 @@ function restrict(req, res, next) {
 */
 async function checkUsernameFree(req, res, next) {
   try {
-    const taken = await User.findBy(req.body.username)
-    if(taken) {
+    const users = await User.findBy( {username: req.body.username })
+    if(!users.length) {
+      next()
+    } else {
       next({
         status: 422,
         message: "Username taken"
-      })
-    } else {
-      next()
+      })    
     }
   } catch (err) {
     next(err)
@@ -55,14 +55,15 @@ async function checkUsernameFree(req, res, next) {
 */
 async function checkUsernameExists(req, res, next) {
   try {
-    const username = await User.findBy(req.body.username)
-    if(!username) {
+    const users = await User.findBy({ username: req.body.username })
+    if(users.length) {
+      req.user = users[0]
+      next()
+    } else {
       next({
         status: 401,
         message: "Invalid credentials"
-      })
-    } else {
-      next()
+      })    
     }
   } catch (err) {
     next(err)
